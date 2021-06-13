@@ -13,13 +13,13 @@ via the simple REST API.
 dns_del_acme_dns does nothing; acme-dns does not have a remove method (although it does only keep
 the last two records added).
 
-You will need to follow the acme-dns instructions to
+You will need to follow the acme-dns instructions to register an account and subdomain.
 
 Briefly,
-1. curl -X POST http://acme-challenge-responder.mydomain.com:5443/register
-2. Add CNAME to DNS (e.g. _acme-challenge.vpn.mydomain.com CNAME 12345-67890.acme-challenge-responder.mydomain.com
+1. `curl -X POST http://acme-challenge-responder.mydomain.com:5443/register`
+2. Add CNAME to DNS (e.g. `_acme-challenge.vpn.mydomain.com CNAME 12345-67890.acme-challenge-responder.mydomain.com`)
 
-Example additions to getssl.cfg:
+Example additions to `getssl.cfg`:
 
 ```
 VALIDATE_VIA_DNS=true
@@ -33,8 +33,8 @@ DNS_EXTRA_WAIT=0
 export _USE_DEBUG
 ```
 
-When using acme-dns, there is no need to wait for DNS to propagate since it is instant, hence DNS_EXTRA_WAIT is
-set to 0 to avoid unnecessary delay.s
+When using acme-dns, there is no need to wait for DNS to propagate since it is instant, hence `DNS_EXTRA_WAIT` is
+set to 0 to avoid unnecessary delays.
 
 
 ## Cisco ASA
@@ -49,15 +49,25 @@ Briefly,
 3. Ensure the HTTPS server is running and available to the client.
 4. Configure the image and enable the agent:
 
+```
 vpn(config)# rest-api image disk0:/asa-restapi-7141-lfbff-k8.SPA
 vpn(config)# rest-api agent
+```
 
 5. Create a user with privilege 15 for the script to use
+```
 vpn(config)# username svc-sslinstall password drowssap1 privilege 15
+```
 
 You need cryptography version 3.0 or later, use `pip3 install -r requirements.txt`
 
-Example getssl.cfg:
+**Note that this script will currently only support one LE certificate with the same
+trustpoint prefix; it will assume other trustpoints with the same prefix are old
+certificates that this script has installed. If you need more than one certificate,
+e.g. certificates with different names, you must use a different trustpoint prefix
+for each.**
+
+Example additions to `getssl.cfg`:
 
 ```
 export ASA_SSL_HOSTNAME=vpn.mydomain

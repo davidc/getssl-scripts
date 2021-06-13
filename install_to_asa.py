@@ -246,6 +246,10 @@ if len(cmds) > 0:
     exec(cmds)
 
 
+# TODO: Add the ability to assign certificates to SNI hostnames instead, using
+# ssl trust-point <trustpoint> domain <sni-hostname>
+
+
 # 4. Assign the trustpoint to IKEv2
 
 if ikev2 != '':
