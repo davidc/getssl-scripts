@@ -15,7 +15,6 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.serialization import pkcs12
 from cryptography.hazmat.backends import default_backend
 
-import argparse
 
 # Script expects its parameters as environment variables exported from getssl.cfg
 
@@ -277,10 +276,10 @@ if ikev2 != '':
 # 5. remove any old certificates created by this script:
 # - that were installed by this script (so begin with trustpoint_prefix)
 # - that don't begin with trustpoint_prefix + current_serial (because multiple can be installed for the CA, e.g. TP_MYSERIAL and TP_MYSERIAL-1
-# NB. This will only currently deal with a device that has only one LE certificate! (It will remove any others assuming they are old versions
-## of our own). TODO: Only remove certs that have expired and/or are no longer assigned anywhere
+# NB. A unique prefix is required if the device has more than one LE certificate, or this script will remove the others!
 
 for old_trustpoint in existing_trustpoints:
     if old_trustpoint.startswith(trustpoint_prefix) and not old_trustpoint.startswith(trustpoint):
-        print("remove old trustpoint: %s" % old_trustpoint)
+        if debug:
+            print('Removing old trustpoint: %s' % (old_trustpoint))
         delete_trustpoint(old_trustpoint)
