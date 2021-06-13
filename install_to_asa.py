@@ -35,7 +35,7 @@ trustpoint_prefix = os.getenv('ASA_SSL_TRUSTPOINT_PREFIX', default='TrustPoint_L
 # File containing the certificate to deploy. Required.
 cert_file = os.getenv('ASA_SSL_CERT')
 
-# File containing the chain up to and including the root, but including our certificate. Required.
+# File containing the chain up to and including the root, but NOT including our certificate. Required.
 chain_file = os.getenv('ASA_SSL_CHAIN')
 
 # File containing the private key. Required.
@@ -128,7 +128,6 @@ def load_private_key(key_file):
 
 
 def api_call(url, http_method, data):
-
     headers = { 'Content-Type': 'application/json', 'User-Agent': 'REST API Agent' }
 
     response = requests.request(http_method, url, data=json.dumps(data), auth=(username, password), headers=headers, verify=ssl_verify)
@@ -163,7 +162,6 @@ def list_trustpoints():
 
 
 def delete_trustpoint(trustpoint):
-
     api_call(api_base_url + '/certificate/identity/' + trustpoint, 'DELETE', {} )
 
 
