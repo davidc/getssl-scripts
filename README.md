@@ -2,6 +2,14 @@
 
 ## General
 
+These scripts aid in installing Let's Encrypt certificates to devices that can't run an ACME client directly.
+They are intended for use with [getssl](https://github.com/srvrco/getssl) although could potentially be
+adapted for other ACME clients.
+
+getssl should run on an independent host, using DNS challenge responses. Scripts are included for
+[acme-dns](https://github.com/joohoi/acme-dns) although another DNS update mechanism could be used.
+After receiving the certificate, it uploads the device to a Cisco ASA or Mikrotik device using their API.
+
 If you export _USE_DEBUG from getssl.cfg, these scripts will produce additional debugging output
 when you run `getssl` with the `-d` flag.
 
@@ -63,14 +71,15 @@ You need cryptography version 3.0 or later, use `pip3 install -r requirements.tx
 
 **Note that this script will currently only support one LE certificate with the same
 trustpoint prefix; it will assume other trustpoints with the same prefix are old
-certificates that this script has installed. If you need more than one certificate,
-e.g. certificates with different names, you must use a different trustpoint prefix
-for each.**
+certificates that this script has installed and remove them.**
+
+**If you need more than one certificate, e.g. certificates with different names, you
+must use a different trustpoint prefix for each.**
 
 Example additions to `getssl.cfg`:
 
 ```
-export ASA_SSL_HOSTNAME=vpn.mydomain
+export ASA_SSL_HOSTNAME=vpn.mydomain.com
 export ASA_SSL_USERNAME=<asa username>
 export ASA_SSL_PASSWORD=<asa password>
 export ASA_SSL_TRUSTPOINT_PREFIX=TrustPoint_LE_
