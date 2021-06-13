@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# acme-dns configuration
+
+api_url=${ACME_DNS_API_URL:-''}
+username=${ACME_DNS_USERNAME:-''}
+password=${ACME_DNS_PASSWORD:-''}
+subdomain=${ACME_DNS_SUBDOMAIN:-''}
+
+
+fulldomain="${1}"
+token="${2}"
+
+curl_params=( -H "X-Api-User: $username" -H "X-Api-Key: $password" )
+
+data='{"subdomain": "'$subdomain'", "txt": "'$token'"}'
+
+if [[ ${_USE_DEBUG} -eq 1 ]]; then
+    echo "Calling ${api_url} with data ${data}"
+fi
+
+tempfile=$(mktemp)
+
+http_code=$(curl --silent "${curl_params[@]}" -X POST --write-out '%{http_code}' -o ${tempfile} -d "${data}" \
+	    "${api_url}/update")
+
+if [ $? -ne 0 ]; then
+    echo "Curl failed to fetch $api_url" >&2
+    rm -f $tempfile
+    exit 1
+fi
+
+resp=$(cat $tempfile)
+rm -f $tempfile
+
+error=$(echo $resp | sed -n 's/.*"error": *"\([^"]*\)*".*/\1/p')
+
+if [ ! -z "$error" ]; then
+    echo "Error adding DNS record: $error" >&2
+    exit 1
+fi
+
+if [ "${http_code}" -gt 399 ]; then
+    echo "Curl got http error code ${http_code} from $api_url" >&2
+    exit 1
+fi
+
+if [[ ${_USE_DEBUG} -eq 1 ]]; then
+    echo response $resp
+fi
+
+exit 0

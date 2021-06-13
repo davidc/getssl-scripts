@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+# Do nothing, acme-dns only serves the last two updates and has no way to remove them
