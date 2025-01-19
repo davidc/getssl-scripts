@@ -121,9 +121,10 @@ recommended to not use this option (unset it or set it to 0).
 The certificate is delivered to a Mikrotik RouterOS device using the API.
 
 You will need the API (or preferably API-SSL) service enabled under `/ip service` and permitting this
-host to call it.
+host to call it. RouterOS version required is something like 6.49 (needs ability to set name= on
+a /certificate)
 
-You will also need a user that is in a group that has at least ftp,read,write,test,api privileges.
+You will also need a user that is in a group that has at least ftp,read,write,api privileges.
 
 The script requires cryptography version 3.0 or later and [routeros-api](https://github.com/socialwifi/RouterOS-api),
 use `pip3 install -r requirements.txt` to install.
