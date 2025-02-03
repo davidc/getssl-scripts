@@ -44,7 +44,9 @@ key_file = os.getenv('ROUTEROS_SSL_KEY')
 # Optional. Default: 0
 debug = int(os.getenv('_USE_DEBUG', 0)) == 1
 
-# Which services to apply the certificate to (/ip service set <x> certificate=newcert). Comma-separated.
+# Which services to apply the certificate to. Comma-separated.
+# ovpn-server - sets it at "/interface ovpn-server server set certificate=newcert".
+# anything else - sets it at /ip service set <x> certificate=newcert.
 # Optional. Default: www-ssl,api-ssl. Can be blank.
 services = os.getenv('ROUTEROS_SSL_SERVICES', default='www-ssl,api-ssl').split(',')
 
@@ -182,15 +184,19 @@ else:
 # 3. Assign the certificate to the requested services
 
 for service in services:
-    the_service = api.get_resource('ip/service').get(name=service)
-    if len(the_service) != 1:
-        error_exit(1, "Couldn't find IP service %s" % (service))
-
-    service_id = the_service[0]['id']
-
     if debug:
         print('Assigning %s to %s service' % (cert_name, service))
-    api.get_resource('ip/service').set(id=service_id, certificate=cert_name)
+
+    if service == 'ovpn-server':
+        api.get_resource('interface/ovpn-server/server').set(certificate=cert_name)
+    else:
+        the_service = api.get_resource('ip/service').get(name=service)
+        if len(the_service) != 1:
+            error_exit(1, "Couldn't find IP service %s" % (service))
+
+        service_id = the_service[0]['id']
+
+        api.get_resource('ip/service').set(id=service_id, certificate=cert_name)
 
 
 # 4. remove any old certificates created by this script:

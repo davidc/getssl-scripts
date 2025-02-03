@@ -142,7 +142,7 @@ export ROUTEROS_SSL_USERNAME=<routeros username>
 export ROUTEROS_SSL_PASSWORD=<routeros username>
 export ROUTEROS_SSL_CHAIN_NAME=LE_Chain
 export ROUTEROS_SSL_CERT_PREFIX=LE_
-export ROUTEROS_SSL_SERVICES=api-ssl,www-ssl
+export ROUTEROS_SSL_SERVICES=api-ssl,www-ssl,ovpn-server
 
 # API type to use (plain, ssl or ssl-insecure)
 export ROUTEROS_SSL_APITYPE=ssl
