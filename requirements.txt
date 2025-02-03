@@ -1,2 +1,3 @@
 cryptography >= 3.0
 routeros-api
+requests
