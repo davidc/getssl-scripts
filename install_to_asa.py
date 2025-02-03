@@ -73,13 +73,6 @@ ssl_verify = True if insecure == 0 else False
 # Passphrase used to encrypt the pkcs12 file while it is delivered to the ASA.
 pass_phrase = 'cisco123'
 
-# Authentication
-#import base64
-#base64string = base64.b64encode(('%s:%s' % (username, password)).encode('utf-8'))
-#pprint(base64string)
-#req.add_header("Authorization", "Basic %s" % base64string)
-
-
 
 # HTTP debugging
 
