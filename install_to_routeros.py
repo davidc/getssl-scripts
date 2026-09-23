@@ -98,7 +98,7 @@ def upload_file(filename, contents):
 def get_file_id(filename):
     our_file = api.get_resource('file').get(name=filename)
     if len(our_file) != 1:
-        raise Exception("Unable to find file %s" % (filename))
+        raise FileNotFoundError("Unable to find file %s" % (filename))
     return our_file[0]['id']
 
 
@@ -163,19 +163,31 @@ if len(find_our_cert) == 0:
     if debug:
         print('Install certificate %s from %s' % (cert_name.encode(), temp_cert_file.encode()))
     api_root.call('certificate/import', { 'name': cert_name.encode(), 'file-name': temp_cert_file.encode(), 'passphrase': ''.encode() })
-    delete_file(temp_cert_file)
+    try:
+        delete_file(temp_cert_file)
+    except FileNotFoundError:
+        # RouterOS 7 deletes the file after importing it, so missing file is OK
+        pass
 
     temp_key_file = upload_file('tmp_key_%s' % (cert_name), key)
     if debug:
         print('Install key %s from %s' % (cert_name.encode(), temp_key_file.encode()))
     api_root.call('certificate/import', { 'name': cert_name.encode(), 'file-name': temp_key_file.encode(), 'passphrase': ''.encode() })
-    delete_file(temp_key_file)
+    try:
+        delete_file(temp_key_file)
+    except FileNotFoundError:
+        # RouterOS 7 deletes the file after importing it, so missing file is OK
+        pass
 
     temp_chain_file = upload_file('tmp_chain_%s' % (chain_name), chain)
     if debug:
         print('Install chain %s from %s' % (chain_name.encode(), temp_chain_file.encode()))
     api_root.call('certificate/import', { 'name': chain_name.encode(), 'file-name': temp_chain_file.encode(), 'passphrase': ''.encode() })
-    delete_file(temp_chain_file)
+    try:
+        delete_file(temp_chain_file)
+    except FileNotFoundError:
+        # RouterOS 7 deletes the file after importing it, so missing file is OK
+        pass
 else:
     if debug:
         print('Certificate %s already exists on router' % (cert_name))
@@ -188,9 +200,9 @@ for service in services:
         print('Assigning %s to %s service' % (cert_name, service))
 
     if service == 'ovpn-server':
-        api.get_resource('interface/ovpn-server/server').set(certificate=cert_name)
+        api.get_resource('interface/ovpn-server/server').set(certificate=cert_name, numbers="0")
     else:
-        the_service = api.get_resource('ip/service').get(name=service)
+        the_service = api.get_resource('ip/service').get(name=service, dynamic="false")
         if len(the_service) != 1:
             error_exit(1, "Couldn't find IP service %s" % (service))
 
